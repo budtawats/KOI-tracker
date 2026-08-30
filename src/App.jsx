@@ -89,7 +89,10 @@ export default function App() {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
-      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return DEFAULT_SETTINGS;
     } catch {
       return DEFAULT_SETTINGS;
     }
@@ -196,16 +199,13 @@ export default function App() {
         }
         if (cloudSettings) {
           setSettings(prev => {
-            // Keep user's custom PIN if local has one and cloud returned default '1234'
-            const currentPin = prev.adminPin;
-            const chosenPin = (cloudSettings.adminPin && cloudSettings.adminPin !== '1234')
-              ? cloudSettings.adminPin
-              : (currentPin || cloudSettings.adminPin || '1234');
-
+            const savedRaw = localStorage.getItem(STORAGE_KEY_SETTINGS);
+            const savedLocal = savedRaw ? JSON.parse(savedRaw) : null;
+            // Prioritize user's saved local customization so it NEVER reverts to server defaults
             const merged = {
-              ...prev,
+              ...DEFAULT_SETTINGS,
               ...cloudSettings,
-              adminPin: chosenPin
+              ...(savedLocal || prev)
             };
             persistSettings(merged);
             return merged;
