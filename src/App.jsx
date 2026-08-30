@@ -44,12 +44,10 @@ export default function App() {
   const modeParam = searchParams.get('mode');
   const trackParam = searchParams.get('track') || '';
 
-  // Determine initial role: URL param takes precedence, then saved device role
+  // Determine initial role: default is ALWAYS 'customer' unless explicitly ?mode=admin
   const getInitialRole = () => {
-    if (modeParam === 'customer' || trackParam) return 'customer';
     if (modeParam === 'admin') return 'admin';
-    const savedRole = localStorage.getItem(STORAGE_KEY_ROLE);
-    return savedRole || 'admin';
+    return 'customer';
   };
 
   const initialMode = getInitialRole();
