@@ -18,7 +18,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { method, body } = req;
+    const { method } = req;
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     const databaseUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
     // 1. If PostgreSQL database is connected on Vercel
