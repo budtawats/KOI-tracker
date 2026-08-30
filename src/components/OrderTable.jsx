@@ -39,8 +39,7 @@ export default function OrderTable({
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [viewStyle, setViewStyle] = useState('table'); // 'table' or 'grid'
+  const [viewStyle, setViewStyle] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 768) ? 'grid' : 'table');
   const [selectedOrderIds, setSelectedOrderIds] = useState([]);
   const [sortBy, setSortBy] = useState('newest'); // 'newest', 'weight-desc', 'cost-desc', 'customer'
   const [copiedId, setCopiedId] = useState(null);

@@ -37,26 +37,26 @@ export default function CustomerNavbar({ onOpenAdminLogin, settings = {} }) {
           </div>
 
           {/* Right Action buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             {/* LINE Contact button */}
             <a
               href={lineUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-[#06C755] hover:bg-[#05b34c] rounded-xl shadow-sm transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-white bg-[#06C755] hover:bg-[#05b34c] rounded-xl shadow-sm transition-all active:scale-95"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">ติดต่อทาง LINE</span>
+              <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span>LINE ร้าน</span>
             </a>
 
             {/* Switch to Admin (with PIN prompt) */}
             <button
               onClick={onOpenAdminLogin}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors border border-gray-200"
               title="เข้าสู่ระบบจัดการหลังบ้าน"
             >
-              <Lock className="w-3.5 h-3.5 text-gray-500" />
-              <span className="hidden sm:inline">สำหรับแอดมิน</span>
+              <Lock className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+              <span>หลังบ้าน</span>
             </button>
           </div>
 
