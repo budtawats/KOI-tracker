@@ -46,15 +46,28 @@ export default function StoreSettingsModal({
   const [activeTab, setActiveTab] = useState('contact'); // 'contact', 'payment', 'security'
 
   useEffect(() => {
-    if (settings) {
-      setFormData(prev => ({
-        ...prev,
-        ...settings
-      }));
+    if (isOpen && settings) {
+      setFormData({
+        shopName: settings.shopName || 'KOI Japan Shop',
+        shopTagline: settings.shopTagline || 'บริการพรีออเดอร์ & ขนส่งสินค้าจากญี่ปุ่น ชั่งน้ำหนักจริง ส่งตรงถึงบ้าน',
+        phone: settings.phone || '081-234-5678',
+        lineId: settings.lineId || '@koijapanshop',
+        lineUrl: settings.lineUrl || 'https://line.me',
+        facebook: settings.facebook || 'KOI Japan Shop',
+        instagram: settings.instagram || '@koijapan.shop',
+        address: settings.address || 'กรุงเทพมหานคร ประเทศไทย',
+        bankName: settings.bankName || 'กสิกรไทย (KBANK)',
+        bankAccountNo: settings.bankAccountNo || '123-4-56789-0',
+        bankAccountName: settings.bankAccountName || 'KOI Japan Shop',
+        promptpay: settings.promptpay || '081-234-5678',
+        adminPin: settings.adminPin || '1234',
+        requirePin: settings.requirePin !== false
+      });
       setNewPin(settings.adminPin || '1234');
       setConfirmPin(settings.adminPin || '1234');
+      setPinError('');
     }
-  }, [settings, isOpen]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

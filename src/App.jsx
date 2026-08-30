@@ -204,14 +204,18 @@ export default function App() {
           persistTrips(syncData.trips);
         }
 
-        // 3. Sync Settings & PIN from cloud (master)
-        if (syncData.settings && typeof syncData.settings === 'object') {
+        // 3. Sync Settings & PIN from cloud (master) - only when settings modal is closed
+        if (!isSettingsOpen && syncData.settings && typeof syncData.settings === 'object') {
           const merged = {
             ...DEFAULT_SETTINGS,
             ...syncData.settings
           };
-          setSettings(merged);
-          persistSettings(merged);
+          setSettings(prev => {
+            // Avoid state overwrite if JSON is identical
+            if (JSON.stringify(prev) === JSON.stringify(merged)) return prev;
+            persistSettings(merged);
+            return merged;
+          });
         }
       } catch (e) {
         console.warn('Sync check offline/local', e);
@@ -226,7 +230,7 @@ export default function App() {
       isMounted = false;
       clearInterval(interval);
     };
-  }, [persistOrders, persistTrips, persistSettings]);
+  }, [isSettingsOpen, persistOrders, persistTrips, persistSettings]);
 
   // Broadcast state changes to cloud for instant sync to other devices
   const broadcastState = useCallback((newOrders, newTrips, newSettings) => {
@@ -238,11 +242,17 @@ export default function App() {
   }, [orders, trips, settings]);
 
   // Settings Save Handler
-  const handleSaveSettings = (newSettings) => {
+  const handleSaveSettings = async (newSettings) => {
     setSettings(newSettings);
     persistSettings(newSettings);
-    api.saveSettings(newSettings);
-    broadcastState(orders, trips, newSettings);
+    try {
+      await Promise.all([
+        api.saveSettings(newSettings),
+        api.syncAll({ orders, trips, settings: newSettings })
+      ]);
+    } catch (e) {
+      console.warn('Failed to sync new settings to cloud:', e);
+    }
     showToast('💾 บันทึกข้อมูลร้านค้าและรหัสผ่านเรียบร้อยแล้ว');
   };
 
