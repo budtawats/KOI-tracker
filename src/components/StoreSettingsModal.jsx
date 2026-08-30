@@ -69,9 +69,12 @@ export default function StoreSettingsModal({
 
     setPinError('');
 
+    // Preserve custom PIN if not explicitly changed
+    const targetPin = (newPin && newPin.trim()) ? newPin.trim() : (formData.adminPin || settings?.adminPin || '1234');
+
     const updated = {
       ...formData,
-      adminPin: newPin || '1234'
+      adminPin: targetPin
     };
 
     onSaveSettings(updated);

@@ -195,8 +195,21 @@ export default function App() {
           persistTrips(cloudTrips);
         }
         if (cloudSettings) {
-          setSettings(cloudSettings);
-          persistSettings(cloudSettings);
+          setSettings(prev => {
+            // Keep user's custom PIN if local has one and cloud returned default '1234'
+            const currentPin = prev.adminPin;
+            const chosenPin = (cloudSettings.adminPin && cloudSettings.adminPin !== '1234')
+              ? cloudSettings.adminPin
+              : (currentPin || cloudSettings.adminPin || '1234');
+
+            const merged = {
+              ...prev,
+              ...cloudSettings,
+              adminPin: chosenPin
+            };
+            persistSettings(merged);
+            return merged;
+          });
         }
       } catch (e) {
         console.warn('Cloud sync offline or using local storage', e);

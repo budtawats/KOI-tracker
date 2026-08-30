@@ -7,11 +7,24 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess, setti
 
   if (!isOpen) return null;
 
-  const validPin = settings.adminPin || '1234';
+  // Read set PIN from settings, then from localStorage, fallback to 1234 only if never set
+  const getStoredPin = () => {
+    if (settings && settings.adminPin) return settings.adminPin;
+    try {
+      const saved = localStorage.getItem('koi_japan_shop_settings_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.adminPin) return parsed.adminPin;
+      }
+    } catch {}
+    return '1234';
+  };
+
+  const validPin = getStoredPin();
 
   const handleVerify = (e) => {
     e.preventDefault();
-    if (pin === validPin || pin === 'koi888' || pin === 'admin') {
+    if (pin === validPin) {
       setError('');
       setPin('');
       onLoginSuccess();
