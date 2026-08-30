@@ -14,20 +14,23 @@ import {
 } from 'lucide-react';
 
 export default function Navbar({ 
-  onOpenNewOrder, 
-  onOpenTripManager, 
-  onOpenCalculator, 
-  onOpenExportImport,
-  onOpenSettings,
-  onSwitchToCustomer,
-  orderCount,
-  totalWeight,
-  lastSavedTime
+  onOpenNewOrder = () => {}, 
+  onOpenTripManager = () => {}, 
+  onOpenCalculator = () => {}, 
+  onOpenExportImport = () => {}, 
+  onOpenSettings = () => {}, 
+  onSwitchToCustomer = () => {}, 
+  orderCount = 0, 
+  totalWeight = 0, 
+  lastSavedTime = '' 
 }) {
   const handleOpenCustomerNewTab = () => {
     const customerUrl = `${window.location.origin}${window.location.pathname}?mode=customer`;
     window.open(customerUrl, '_blank');
   };
+
+  const safeCount = typeof orderCount === 'number' ? orderCount : 0;
+  const safeWeight = (parseFloat(totalWeight) || 0).toFixed(1);
 
   return (
     <>
@@ -48,7 +51,7 @@ export default function Navbar({
           </div>
           
           <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-gray-300">
-            <span><strong>{orderCount}</strong> ออเดอร์ (<strong>{totalWeight.toFixed(1)}</strong> กก.)</span>
+            <span><strong>{safeCount}</strong> ออเดอร์ (<strong>{safeWeight}</strong> กก.)</span>
             <button
               onClick={onSwitchToCustomer}
               className="text-red-300 hover:text-white flex items-center gap-1 underline font-semibold"

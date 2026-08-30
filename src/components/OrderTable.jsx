@@ -26,19 +26,23 @@ import { CATEGORIES, ORDER_STATUSES } from '../types/data';
 import { formatCurrency, formatWeight, formatThaiDate, calculateWeightCost } from '../utils/formatters';
 
 export default function OrderTable({
-  orders,
-  trips,
-  selectedTrip,
-  setSelectedTrip,
-  onEditOrder,
-  onDeleteOrder,
-  onOpenSlip,
-  onUpdateStatus,
-  onQuickUpdate,
-  onOpenNewOrder
+  orders = [],
+  trips = [],
+  selectedTrip = 'all',
+  setSelectedTrip = () => {},
+  onEditOrder = () => {},
+  onDeleteOrder = () => {},
+  onOpenSlip = () => {},
+  onUpdateStatus = () => {},
+  onQuickUpdate = () => {},
+  onOpenNewOrder = () => {}
 }) {
+  const safeOrders = Array.isArray(orders) ? orders : [];
+  const safeTrips = Array.isArray(trips) ? trips : [];
+
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [viewStyle, setViewStyle] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 768) ? 'grid' : 'table');
   const [selectedOrderIds, setSelectedOrderIds] = useState([]);
   const [sortBy, setSortBy] = useState('newest'); // 'newest', 'weight-desc', 'cost-desc', 'customer'
@@ -52,14 +56,15 @@ export default function OrderTable({
   };
 
   // Filter orders
-  const filteredOrders = orders.filter(order => {
+  const filteredOrders = safeOrders.filter(order => {
+    if (!order) return false;
     // Search query matching
     const query = searchQuery.toLowerCase().trim();
     const matchesSearch = !query || 
-      order.id.toLowerCase().includes(query) ||
-      order.customerName.toLowerCase().includes(query) ||
-      order.customerPhone.includes(query) ||
-      order.productName.toLowerCase().includes(query) ||
+      (order.id && order.id.toLowerCase().includes(query)) ||
+      (order.customerName && order.customerName.toLowerCase().includes(query)) ||
+      (order.customerPhone && order.customerPhone.includes(query)) ||
+      (order.productName && order.productName.toLowerCase().includes(query)) ||
       (order.localTrackingNo && order.localTrackingNo.toLowerCase().includes(query));
 
     // Category filter

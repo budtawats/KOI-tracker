@@ -11,6 +11,7 @@ import WeightCalculatorModal from './components/WeightCalculatorModal';
 import ExportImportModal from './components/ExportImportModal';
 import AdminLoginModal from './components/AdminLoginModal';
 import StoreSettingsModal from './components/StoreSettingsModal';
+import ErrorBoundary from './components/ErrorBoundary';
 import { api } from './services/api';
 
 import { INITIAL_ORDERS, INITIAL_TRIPS } from './utils/initialData';
@@ -179,32 +180,30 @@ export default function App() {
     }
   }, [viewMode, settings.shopName]);
 
-  // Cloud Sync on Mount
+  // Cloud Sync on Mount & Periodic Interval for Realtime Cross-Device Sync
   useEffect(() => {
+    let isMounted = true;
+
     async function syncWithCloud() {
       try {
-        const [cloudOrders, cloudTrips, cloudSettings] = await Promise.all([
-          api.getOrders(),
-          api.getTrips(),
-          api.getSettings()
-        ]);
+        const syncData = await api.fetchFullSync();
+        if (!syncData || !isMounted) return;
 
-        if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
-          setOrders(cloudOrders);
-          persistOrders(cloudOrders);
+        if (Array.isArray(syncData.orders) && syncData.orders.length > 0) {
+          setOrders(syncData.orders);
+          persistOrders(syncData.orders);
         }
-        if (Array.isArray(cloudTrips) && cloudTrips.length > 0) {
-          setTrips(cloudTrips);
-          persistTrips(cloudTrips);
+        if (Array.isArray(syncData.trips) && syncData.trips.length > 0) {
+          setTrips(syncData.trips);
+          persistTrips(syncData.trips);
         }
-        if (cloudSettings) {
+        if (syncData.settings) {
           setSettings(prev => {
             const savedRaw = localStorage.getItem(STORAGE_KEY_SETTINGS);
             const savedLocal = savedRaw ? JSON.parse(savedRaw) : null;
-            // Prioritize user's saved local customization so it NEVER reverts to server defaults
             const merged = {
               ...DEFAULT_SETTINGS,
-              ...cloudSettings,
+              ...syncData.settings,
               ...(savedLocal || prev)
             };
             persistSettings(merged);
@@ -212,17 +211,35 @@ export default function App() {
           });
         }
       } catch (e) {
-        console.warn('Cloud sync offline or using local storage', e);
+        console.warn('Sync check offline/local', e);
       }
     }
+
     syncWithCloud();
+
+    // Poll every 4 seconds for instant real-time sync across computer and phone
+    const interval = setInterval(syncWithCloud, 4000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [persistOrders, persistTrips, persistSettings]);
+
+  // Broadcast state changes to cloud for instant sync to other devices
+  const broadcastState = useCallback((newOrders, newTrips, newSettings) => {
+    api.syncAll({
+      orders: newOrders || orders,
+      trips: newTrips || trips,
+      settings: newSettings || settings
+    });
+  }, [orders, trips, settings]);
 
   // Settings Save Handler
   const handleSaveSettings = (newSettings) => {
     setSettings(newSettings);
     persistSettings(newSettings);
     api.saveSettings(newSettings);
+    broadcastState(orders, trips, newSettings);
     showToast('💾 บันทึกข้อมูลร้านค้าและรหัสผ่านเรียบร้อยแล้ว');
   };
 
@@ -242,6 +259,7 @@ export default function App() {
       setOrders(prev => {
         const next = prev.map(o => o.id === orderData.id ? orderData : o);
         persistOrders(next);
+        broadcastState(next, trips, settings);
         return next;
       });
       api.saveOrder(orderData, false);
@@ -250,6 +268,7 @@ export default function App() {
       setOrders(prev => {
         const next = [orderData, ...prev];
         persistOrders(next);
+        broadcastState(next, trips, settings);
         return next;
       });
       api.saveOrder(orderData, true);
@@ -285,6 +304,7 @@ export default function App() {
       setOrders(prev => {
         const next = prev.filter(o => o.id !== orderId);
         persistOrders(next);
+        broadcastState(next, trips, settings);
         return next;
       });
       api.deleteOrder(orderId);
@@ -317,6 +337,7 @@ export default function App() {
         return updated;
       });
       persistOrders(next);
+      broadcastState(next, trips, settings);
       if (targetOrder) {
         api.saveOrder(targetOrder, false);
       }
@@ -343,6 +364,7 @@ export default function App() {
         next = [...prev, tripData];
       }
       persistTrips(next);
+      broadcastState(orders, next, settings);
       return next;
     });
     api.saveTrip(tripData, false);
@@ -353,6 +375,7 @@ export default function App() {
     setTrips(prev => {
       const next = prev.filter(t => t.id !== tripId);
       persistTrips(next);
+      broadcastState(orders, next, settings);
       return next;
     });
     api.deleteTrip(tripId);
@@ -367,6 +390,9 @@ export default function App() {
     if (importedTrips && importedTrips.length > 0) {
       setTrips(importedTrips);
       persistTrips(importedTrips);
+      broadcastState(importedOrders, importedTrips, settings);
+    } else {
+      broadcastState(importedOrders, trips, settings);
     }
     showToast('นำเข้าและบันทึกข้อมูลสำเร็จ');
   };
@@ -376,10 +402,11 @@ export default function App() {
     setTrips(INITIAL_TRIPS);
     persistOrders(INITIAL_ORDERS);
     persistTrips(INITIAL_TRIPS);
+    broadcastState(INITIAL_ORDERS, INITIAL_TRIPS, settings);
     showToast('รีเซ็ตข้อมูลตัวอย่างเริ่มต้นสำเร็จ');
   };
 
-  const totalWeight = orders.reduce((sum, o) => sum + (parseFloat(o.weightKg) || 0), 0);
+  const totalWeight = (orders || []).reduce((sum, o) => sum + (parseFloat(o.weightKg) || 0), 0);
 
   // Switch to customer view
   const handleSwitchToCustomer = () => {
@@ -404,7 +431,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] flex flex-col selection:bg-red-500 selection:text-white">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[#F8F9FB] flex flex-col selection:bg-red-500 selection:text-white">
       
       {/* 1. SEPARATE NAVBAR BASED ON ROLE */}
       {viewMode === 'admin' ? (
@@ -599,6 +627,7 @@ export default function App() {
         </div>
       )}
 
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

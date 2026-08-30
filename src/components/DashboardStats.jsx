@@ -15,36 +15,39 @@ import { formatCurrency, formatWeight, getDaysLeftText } from '../utils/formatte
 import { ORDER_STATUSES, CATEGORIES } from '../types/data';
 
 export default function DashboardStats({ 
-  orders, 
-  trips, 
-  selectedTrip, 
-  setSelectedTrip,
-  selectedCategory,
-  setSelectedCategory,
-  onOpenTripManager
+  orders = [], 
+  trips = [], 
+  selectedTrip = 'all', 
+  setSelectedTrip = () => {}, 
+  selectedCategory = 'all', 
+  setSelectedCategory = () => {}, 
+  onOpenTripManager = () => {} 
 }) {
+  const safeOrders = Array.isArray(orders) ? orders : [];
+  const safeTrips = Array.isArray(trips) ? trips : [];
+
   // Calculate summary metrics
-  const totalOrders = orders.length;
-  const totalPieces = orders.reduce((sum, o) => sum + (parseInt(o.quantity) || 0), 0);
-  const totalWeightKg = orders.reduce((sum, o) => sum + (parseFloat(o.weightKg) || 0), 0);
+  const totalOrders = safeOrders.length;
+  const totalPieces = safeOrders.reduce((sum, o) => sum + (parseInt(o.quantity) || 0), 0);
+  const totalWeightKg = safeOrders.reduce((sum, o) => sum + (parseFloat(o.weightKg) || 0), 0);
   
-  const totalWeightFee = orders.reduce((sum, o) => {
+  const totalWeightFee = safeOrders.reduce((sum, o) => {
     const w = parseFloat(o.weightKg) || 0;
     const rate = parseFloat(o.weightRate) || 0;
     return sum + (w * rate);
   }, 0);
 
-  const totalProductValue = orders.reduce((sum, o) => sum + (parseFloat(o.itemPriceThb) || 0), 0);
+  const totalProductValue = safeOrders.reduce((sum, o) => sum + (parseFloat(o.itemPriceThb) || 0), 0);
 
   // Status counts
   const statusCounts = ORDER_STATUSES.map(st => ({
     ...st,
-    count: orders.filter(o => o.status === st.id).length
+    count: safeOrders.filter(o => o.status === st.id).length
   }));
 
   // Trip stats
-  const tripStats = trips.map(trip => {
-    const tripOrders = orders.filter(o => o.tripId === trip.id);
+  const tripStats = safeTrips.map(trip => {
+    const tripOrders = safeOrders.filter(o => o.tripId === trip.id);
     const weight = tripOrders.reduce((sum, o) => sum + (parseFloat(o.weightKg) || 0), 0);
     const pieces = tripOrders.reduce((sum, o) => sum + (parseInt(o.quantity) || 0), 0);
     const daysLeft = getDaysLeftText(trip.returnDate);

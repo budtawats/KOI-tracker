@@ -128,5 +128,30 @@ export const api = {
       console.warn('API saveSettings failed, local fallback:', e.message);
       return settings;
     }
+  },
+
+  // Realtime Cross-Device Cloud Sync
+  async fetchFullSync() {
+    try {
+      const res = await fetch(`${API_BASE}/sync`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async syncAll(payload) {
+    try {
+      const res = await fetch(`${API_BASE}/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
   }
 };
