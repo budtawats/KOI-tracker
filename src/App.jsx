@@ -189,26 +189,29 @@ export default function App() {
         const syncData = await api.fetchFullSync();
         if (!syncData || !isMounted) return;
 
-        if (Array.isArray(syncData.orders) && syncData.orders.length > 0) {
+        // 1. Sync Orders from cloud (master)
+        if (syncData.orders !== null && Array.isArray(syncData.orders)) {
           setOrders(syncData.orders);
           persistOrders(syncData.orders);
+        } else if (orders.length > 0) {
+          // Push initial local orders to cloud if cloud is empty
+          api.syncAll({ orders, trips, settings });
         }
-        if (Array.isArray(syncData.trips) && syncData.trips.length > 0) {
+
+        // 2. Sync Trips from cloud (master)
+        if (syncData.trips !== null && Array.isArray(syncData.trips)) {
           setTrips(syncData.trips);
           persistTrips(syncData.trips);
         }
-        if (syncData.settings) {
-          setSettings(prev => {
-            const savedRaw = localStorage.getItem(STORAGE_KEY_SETTINGS);
-            const savedLocal = savedRaw ? JSON.parse(savedRaw) : null;
-            const merged = {
-              ...DEFAULT_SETTINGS,
-              ...syncData.settings,
-              ...(savedLocal || prev)
-            };
-            persistSettings(merged);
-            return merged;
-          });
+
+        // 3. Sync Settings & PIN from cloud (master)
+        if (syncData.settings && typeof syncData.settings === 'object') {
+          const merged = {
+            ...DEFAULT_SETTINGS,
+            ...syncData.settings
+          };
+          setSettings(merged);
+          persistSettings(merged);
         }
       } catch (e) {
         console.warn('Sync check offline/local', e);
@@ -217,8 +220,8 @@ export default function App() {
 
     syncWithCloud();
 
-    // Poll every 4 seconds for instant real-time sync across computer and phone
-    const interval = setInterval(syncWithCloud, 4000);
+    // Poll every 3 seconds for instant real-time sync across computer and phone
+    const interval = setInterval(syncWithCloud, 3000);
     return () => {
       isMounted = false;
       clearInterval(interval);

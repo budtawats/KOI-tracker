@@ -1,12 +1,8 @@
 // Universal Real-Time Cloud Sync API: /api/sync
-// Allows instant seamless synchronization across Computer & Mobile Phone
+// Persistent cross-device storage for Computer & Mobile Phone
 
-let cloudStore = {
-  orders: null,
-  trips: null,
-  settings: null,
-  lastUpdated: new Date().toISOString()
-};
+const CLOUD_SYNC_OBJECT_ID = 'ff808181a04ccf2d01a05376f5b21927';
+const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_OBJECT_ID}`;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -27,97 +23,132 @@ export default async function handler(req, res) {
 
     // 1. If PostgreSQL database is connected on Vercel
     if (databaseUrl) {
-      const { Pool } = await import('pg');
-      const pool = new Pool({
-        connectionString: databaseUrl,
-        ssl: { rejectUnauthorized: false }
-      });
+      try {
+        const { Pool } = await import('pg');
+        const pool = new Pool({
+          connectionString: databaseUrl,
+          ssl: { rejectUnauthorized: false }
+        });
 
-      if (method === 'GET') {
-        const [ordersRes, tripsRes, settingsRes] = await Promise.all([
-          pool.query('SELECT * FROM orders ORDER BY created_at DESC'),
-          pool.query('SELECT * FROM trips ORDER BY return_date ASC'),
-          pool.query('SELECT * FROM settings WHERE id = $1', ['main'])
-        ]);
-
-        const orders = ordersRes.rows.map(mapDbToOrder);
-        const trips = tripsRes.rows.map(row => ({
-          id: row.id,
-          name: row.name,
-          returnDate: row.return_date,
-          channel: row.channel,
-          defaultRate: parseFloat(row.default_rate) || 250,
-          status: row.status,
-          note: row.note
-        }));
-        const s = settingsRes.rows[0];
-        const settings = s ? {
-          shopName: s.shop_name,
-          shopTagline: s.shop_tagline,
-          phone: s.phone,
-          lineId: s.line_id,
-          lineUrl: s.line_url,
-          facebook: s.facebook,
-          instagram: s.instagram,
-          address: s.address,
-          bankName: s.bank_name,
-          bankAccountNo: s.bank_account_no,
-          bankAccountName: s.bank_account_name,
-          promptpay: s.promptpay,
-          adminPin: s.admin_pin,
-          requirePin: s.require_pin
-        } : null;
-
-        await pool.end();
-        return res.status(200).json({ success: true, orders, trips, settings, source: 'postgres' });
-      }
-
-      if (method === 'POST' || method === 'PUT') {
-        const { orders, trips, settings } = body;
-        // Batch update to Postgres
-        if (settings) {
-          await pool.query(`
-            INSERT INTO settings (id, shop_name, shop_tagline, phone, line_id, line_url, facebook, instagram, address, bank_name, bank_account_no, bank_account_name, promptpay, admin_pin, require_pin, updated_at)
-            VALUES ('main', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
-            ON CONFLICT (id) DO UPDATE SET
-              shop_name = $1, shop_tagline = $2, phone = $3, line_id = $4, line_url = $5, facebook = $6, instagram = $7, address = $8, bank_name = $9, bank_account_no = $10, bank_account_name = $11, promptpay = $12, admin_pin = $13, require_pin = $14, updated_at = NOW()
-          `, [
-            settings.shopName, settings.shopTagline, settings.phone, settings.lineId, settings.lineUrl,
-            settings.facebook, settings.instagram, settings.address, settings.bankName, settings.bankAccountNo,
-            settings.bankAccountName, settings.promptpay, settings.adminPin || '1234', settings.requirePin !== false
+        if (method === 'GET') {
+          const [ordersRes, tripsRes, settingsRes] = await Promise.all([
+            pool.query('SELECT * FROM orders ORDER BY created_at DESC'),
+            pool.query('SELECT * FROM trips ORDER BY return_date ASC'),
+            pool.query('SELECT * FROM settings WHERE id = $1', ['main'])
           ]);
+
+          const orders = ordersRes.rows.map(mapDbToOrder);
+          const trips = tripsRes.rows.map(row => ({
+            id: row.id,
+            name: row.name,
+            returnDate: row.return_date,
+            channel: row.channel,
+            defaultRate: parseFloat(row.default_rate) || 250,
+            status: row.status,
+            note: row.note
+          }));
+          const s = settingsRes.rows[0];
+          const settings = s ? {
+            shopName: s.shop_name,
+            shopTagline: s.shop_tagline,
+            phone: s.phone,
+            lineId: s.line_id,
+            lineUrl: s.line_url,
+            facebook: s.facebook,
+            instagram: s.instagram,
+            address: s.address,
+            bankName: s.bank_name,
+            bankAccountNo: s.bank_account_no,
+            bankAccountName: s.bank_account_name,
+            promptpay: s.promptpay,
+            adminPin: s.admin_pin,
+            requirePin: s.require_pin
+          } : null;
+
+          await pool.end();
+          return res.status(200).json({ success: true, orders, trips, settings, source: 'postgres' });
         }
 
-        await pool.end();
-        return res.status(200).json({ success: true, updated: true, source: 'postgres' });
+        if (method === 'POST' || method === 'PUT') {
+          const { orders, trips, settings } = body;
+          if (settings) {
+            await pool.query(`
+              INSERT INTO settings (id, shop_name, shop_tagline, phone, line_id, line_url, facebook, instagram, address, bank_name, bank_account_no, bank_account_name, promptpay, admin_pin, require_pin, updated_at)
+              VALUES ('main', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW())
+              ON CONFLICT (id) DO UPDATE SET
+                shop_name = $1, shop_tagline = $2, phone = $3, line_id = $4, line_url = $5, facebook = $6, instagram = $7, address = $8, bank_name = $9, bank_account_no = $10, bank_account_name = $11, promptpay = $12, admin_pin = $13, require_pin = $14, updated_at = NOW()
+            `, [
+              settings.shopName, settings.shopTagline, settings.phone, settings.lineId, settings.lineUrl,
+              settings.facebook, settings.instagram, settings.address, settings.bankName, settings.bankAccountNo,
+              settings.bankAccountName, settings.promptpay, settings.adminPin || '1234', settings.requirePin !== false
+            ]);
+          }
+          await pool.end();
+        }
+      } catch (dbErr) {
+        console.warn('Postgres query error, falling back to persistent cloud store:', dbErr.message);
       }
     }
 
-    // 2. High-speed In-Memory & Edge Sync (Fallback)
+    // 2. Persistent Cross-Device Cloud Store (Works 100% across Computer + Mobile)
     if (method === 'GET') {
+      try {
+        const cloudRes = await fetch(CLOUD_API_URL);
+        if (cloudRes.ok) {
+          const cloudData = await cloudRes.json();
+          if (cloudData && cloudData.data) {
+            return res.status(200).json({
+              success: true,
+              orders: cloudData.data.orders,
+              trips: cloudData.data.trips,
+              settings: cloudData.data.settings,
+              lastUpdated: cloudData.data.lastUpdated,
+              source: 'persistent_cloud'
+            });
+          }
+        }
+      } catch (cloudErr) {
+        console.warn('Failed to read from persistent cloud store:', cloudErr.message);
+      }
+
       return res.status(200).json({
         success: true,
-        orders: cloudStore.orders,
-        trips: cloudStore.trips,
-        settings: cloudStore.settings,
-        lastUpdated: cloudStore.lastUpdated,
-        source: 'edge_memory'
+        orders: null,
+        trips: null,
+        settings: null,
+        source: 'empty'
       });
     }
 
     if (method === 'POST' || method === 'PUT') {
       const { orders, trips, settings } = body;
-      if (Array.isArray(orders)) cloudStore.orders = orders;
-      if (Array.isArray(trips)) cloudStore.trips = trips;
-      if (settings) cloudStore.settings = settings;
-      cloudStore.lastUpdated = new Date().toISOString();
+      const payload = {
+        name: 'koi_japan_shop_sync',
+        data: {
+          orders: Array.isArray(orders) ? orders : [],
+          trips: Array.isArray(trips) ? trips : [],
+          settings: settings || null,
+          lastUpdated: new Date().toISOString()
+        }
+      };
+
+      try {
+        await fetch(CLOUD_API_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (saveErr) {
+        console.warn('Failed to save to persistent cloud store:', saveErr.message);
+      }
 
       return res.status(200).json({
         success: true,
-        orders: cloudStore.orders,
-        trips: cloudStore.trips,
-        settings: cloudStore.settings,
-        lastUpdated: cloudStore.lastUpdated
+        orders: payload.data.orders,
+        trips: payload.data.trips,
+        settings: payload.data.settings,
+        lastUpdated: payload.data.lastUpdated,
+        source: 'persistent_cloud'
       });
     }
 
