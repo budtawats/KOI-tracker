@@ -174,9 +174,9 @@ export default function App() {
   // Sync document title and URL mode
   useEffect(() => {
     if (viewMode === 'customer') {
-      document.title = `${settings.shopName || 'KOI Japan Shop'} — ตรวจสอบสถานะพัสดุและค่าน้ำหนัก`;
+      document.title = `${settings.shopName || 'KOI Japan Post'} — ติดตามสถานะสิ่งของ (Track & Trace)`;
     } else {
-      document.title = `${settings.shopName || 'KOI Japan Shop'} — ระบบจัดการร้านค้า & คำนวณค่าน้ำหนัก`;
+      document.title = `${settings.shopName || 'KOI Japan Post'} — ระบบจัดการหลังบ้าน & คำนวณค่าน้ำหนัก`;
     }
   }, [viewMode, settings.shopName]);
 

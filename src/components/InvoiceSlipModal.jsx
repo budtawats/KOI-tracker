@@ -136,17 +136,17 @@ ${bankAccountNo ? `🏦 ช่องทางชำระเงิน:\n${bankNa
             className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-md border border-gray-200 text-gray-800 space-y-6 relative"
           >
             {/* Red top border bar */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-600 to-amber-500 rounded-t-2xl"></div>
+            <div className="absolute top-0 left-0 right-0 h-2.5 bg-[#ED1C24] rounded-t-2xl"></div>
 
             {/* Slip Header */}
-            <div className="text-center pt-2 space-y-1">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 text-white font-black text-xl shadow-md mb-2">
+            <div className="text-center pt-2 space-y-1.5">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ED1C24] text-white font-black text-xl shadow-md shadow-red-500/20 mb-1">
                 KOI
               </div>
-              <h2 className="text-xl font-black text-gray-900 tracking-tight">KOI Japan Shop</h2>
-              <p className="text-xs text-gray-500">ใบแจ้งยอดค่าน้ำหนัก & สรุปรายการสินค้าพรีออเดอร์</p>
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">KOI JAPAN POST</h2>
+              <p className="text-xs font-semibold text-[#ED1C24]">ใบแจ้งยอดค่าน้ำหนัก & สรุปรายการสิ่งของ</p>
               <div className="pt-2 flex justify-center">
-                <span className="font-mono text-xs font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                <span className="font-mono text-sm font-black text-white bg-[#ED1C24] px-4 py-1 rounded-xl shadow-sm tracking-wider">
                   {order.id}
                 </span>
               </div>
