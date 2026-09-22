@@ -74,39 +74,39 @@ export const CATEGORIES = [
   }
 ];
 
-// Thailand Post Style Tracking Statuses
+// 5-Stage Order Tracking Statuses
 export const ORDER_STATUSES = [
   {
     id: 'ordered',
     step: 1,
-    label: 'รับฝากสิ่งของเรียบร้อย (โตเกียว ญี่ปุ่น)',
-    labelShort: 'รับฝากสิ่งของ',
-    location: 'ศูนย์รับฝากโตเกียว (TOKYO HUB)',
-    description: 'รับคำสั่งซื้อและรับสิ่งของเข้าสู่คลังสินค้าที่ญี่ปุ่นเรียบร้อยแล้ว',
+    label: 'สั่งซื้อแล้ว & รับเข้าคลังญี่ปุ่น',
+    labelShort: 'รับเข้าคลังญี่ปุ่น',
+    location: 'คลังสินค้าโตเกียว ญี่ปุ่น (Tokyo Hub)',
+    description: 'รับคำสั่งซื้อและรับสินค้าเข้าคลังที่ญี่ปุ่นเรียบร้อยแล้ว',
     color: 'bg-amber-50 text-amber-800 border-amber-300',
     badge: 'bg-amber-500',
-    statusTag: 'รับฝาก',
+    statusTag: 'สั่งซื้อแล้ว',
     icon: 'PackageCheck'
   },
   {
     id: 'received_jp',
     step: 2,
-    label: 'สิ่งของอยู่ระหว่างการขนส่ง (Japan Express ✈️)',
-    labelShort: 'ระหว่างการขนส่ง',
-    location: 'คลังสินค้านาริตะ / ท่าอากาศยานโตเกียว',
-    description: 'สิ่งของผ่านการตรวจสอบศุลกากรญี่ปุ่น และอยู่ระหว่างเที่ยวบิน/การเดินทางสู่ประเทศไทย',
+    label: 'สินค้ากำลังเดินทางกลับไทย (Flight ✈️)',
+    labelShort: 'กำลังบินกลับไทย',
+    location: 'ท่าอากาศยานโตเกียว / นาริตะ ญี่ปุ่น',
+    description: 'สินค้าผ่านการตรวจและกำลังเดินทางสู่ประเทศไทยตามรอบจัดส่ง',
     color: 'bg-blue-50 text-blue-800 border-blue-300',
     badge: 'bg-blue-600',
-    statusTag: 'ส่งต่อระหว่างประเทศ',
+    statusTag: 'ระหว่างบินกลับ',
     icon: 'Plane'
   },
   {
     id: 'in_transit',
     step: 3,
-    label: 'ถึงศูนย์คัดแยกไทย & ชั่งน้ำหนักจริง (ศป.สุวรรณภูมิ)',
-    labelShort: 'ถึงศูนย์คัดแยกไทย',
-    location: 'ศูนย์คัดแยกและกระจายสินค้า (THAILAND HUB)',
-    description: 'สิ่งของถึงศูนย์คัดแยกประเทศไทย คัดแยก ชั่งน้ำหนักจริง และคำนวณค่าน้ำหนักเรียบร้อย',
+    label: 'สินค้าถึงไทย & ชั่งน้ำหนักจริงแล้ว',
+    labelShort: 'ถึงไทย/ชั่งน้ำหนัก',
+    location: 'ศูนย์กระจายสินค้าไทย (กทม.)',
+    description: 'สินค้าถึงไทยเรียบร้อย ชั่งน้ำหนักจริงตามเรท และสรุปยอดค่าน้ำหนัก',
     color: 'bg-purple-50 text-purple-800 border-purple-300',
     badge: 'bg-purple-600',
     statusTag: 'ชั่งน้ำหนักแล้ว',
@@ -115,32 +115,32 @@ export const ORDER_STATUSES = [
   {
     id: 'arrived_th',
     step: 4,
-    label: 'ออกใบแจ้งยอด & เตรียมการนำจ่าย',
-    labelShort: 'เตรียมการนำจ่าย',
-    location: 'ศูนย์ไปรษณีย์นำจ่ายปลายทาง',
-    description: 'ออกใบแจ้งยอดค่าน้ำหนัก บรรจุพัสดุห่อหุ้ม และจัดเตรียมส่งมอบบริษัทขนส่งในไทย',
+    label: 'ออกใบแจ้งยอด & เตรียมจัดส่งในไทย',
+    labelShort: 'เตรียมจัดส่งในไทย',
+    location: 'แผนกแพ็คและจัดส่งสินค้า',
+    description: 'แจ้งสรุปยอดโอน ชำระค่าน้ำหนัก และจัดเตรียมพัสดุส่งมอบขนส่งในไทย',
     color: 'bg-orange-50 text-orange-800 border-orange-300',
     badge: 'bg-orange-600',
-    statusTag: 'พร้อมนำจ่าย',
+    statusTag: 'พร้อมจัดส่ง',
     icon: 'Truck'
   },
   {
     id: 'delivered',
     step: 5,
-    label: 'นำจ่ายสำเร็จ (จัดส่งถึงผู้รับเรียบร้อย) 📦',
-    labelShort: 'นำจ่ายสำเร็จ',
+    label: 'จัดส่งในไทยเรียบร้อย (มีเลขพัสดุ) 📦',
+    labelShort: 'จัดส่งเรียบร้อย',
     location: 'ที่อยู่ผู้รับปลายทาง (Destination)',
-    description: 'พัสดุจัดส่งถึงมือผู้รับปลายทางเรียบร้อยแล้ว หรือส่งมอบพัสดุให้ขนส่งในประเทศพร้อมหมายเลขพัสดุ',
+    description: 'ส่งมอบพัสดุให้บริษัทขนส่งในไทยเรียบร้อย พร้อมหมายเลขติดตามพัสดุ',
     color: 'bg-emerald-50 text-emerald-800 border-emerald-300',
     badge: 'bg-emerald-600',
-    statusTag: 'นำจ่ายสำเร็จ',
+    statusTag: 'จัดส่งสำเร็จ',
     icon: 'CheckCircle2'
   }
 ];
 
 // Shipping Channels
 export const SHIPPING_CHANNELS = [
-  { id: 'air_express', name: 'Japan Express (ทางเครื่องบิน)', rateNote: 'เรท 280-350 ฿/กก.', defaultRate: 300 },
-  { id: 'air_cargo', name: 'Japan Air Cargo (คาร์โก้ปกติ)', rateNote: 'เรท 220-260 ฿/กก.', defaultRate: 250 },
-  { id: 'sea_cargo', name: 'Japan Sea Cargo (ทางเรือประหยัด)', rateNote: 'เรท 130-180 ฿/กก.', defaultRate: 150 },
+  { id: 'air_express', name: 'ทางเครื่องบิน (บินด่วน)', rateNote: 'เรท 280-350 ฿/กก.', defaultRate: 300 },
+  { id: 'air_cargo', name: 'ทางเครื่องบิน (คาร์โก้ปกติ)', rateNote: 'เรท 220-260 ฿/กก.', defaultRate: 250 },
+  { id: 'sea_cargo', name: 'ทางเรือ (ของหนัก/ประหยัด)', rateNote: 'เรท 130-180 ฿/กก.', defaultRate: 150 },
 ];

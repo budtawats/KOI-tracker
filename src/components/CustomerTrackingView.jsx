@@ -19,7 +19,6 @@ import {
   MessageCircle,
   AlertCircle,
   Share2,
-  Barcode,
   HelpCircle,
   FileText,
   Calculator,
@@ -117,7 +116,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
     return CATEGORIES.find(c => c.id === catId) || CATEGORIES[0];
   };
 
-  // Generate realistic postal tracking logs
+  // Generate realistic tracking logs
   const getTrackingLogs = (order) => {
     const trip = getTripInfo(order.tripId);
     const currentStatusObj = ORDER_STATUSES.find(s => s.id === order.status) || ORDER_STATUSES[0];
@@ -129,8 +128,8 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
         return {
           id: index,
           date: log.timestamp ? formatThaiDate(log.timestamp) : formatThaiDate(order.createdAt),
-          time: log.timestamp ? new Date(log.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : '10:00',
-          location: matched?.location || 'ศูนย์บริการไปรษณีย์',
+          time: log.timestamp ? new Date(log.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) : '10:00 น.',
+          location: matched?.location || 'ศูนย์คัดแยกสินค้า',
           status: matched?.label || log.status,
           statusTag: matched?.statusTag || 'สถานะปกติ',
           description: log.note || matched?.description || '',
@@ -139,7 +138,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
       });
     }
 
-    // Default generated realistic postal timeline logs
+    // Default generated realistic timeline logs
     const mockLogs = [];
     ORDER_STATUSES.forEach((st) => {
       if (st.step <= currentStep) {
@@ -165,27 +164,24 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
     <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 animate-fadeIn pb-12">
       
       {/* =========================================================
-          SECTION 1: THAILAND POST STYLE SEARCH HERO
+          SECTION 1: SEARCH HERO CARD
           ========================================================= */}
       <div className="bg-white rounded-3xl border-2 border-red-100 shadow-xl overflow-hidden">
         
-        {/* Postal Hero Red Header Banner */}
-        <div className="bg-gradient-to-r from-[#ED1C24] via-[#D4141E] to-[#B80D16] text-white p-6 sm:p-8 relative overflow-hidden">
+        {/* Hero Red Header Banner */}
+        <div className="bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white p-6 sm:p-8 relative overflow-hidden">
           <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-48 h-48 bg-white/10 rounded-full pointer-events-none blur-2xl"></div>
-          <div className="absolute right-12 bottom-4 opacity-10 pointer-events-none hidden sm:block">
-            <Send className="w-32 h-32 text-white -rotate-12" />
-          </div>
 
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold mb-3 border border-white/30">
-              <Send className="w-3.5 h-3.5" />
-              <span>THAILAND POST STYLE • TRACK & TRACE PORTAL</span>
+              <Package className="w-3.5 h-3.5" />
+              <span>{shopName} • TRACKING PORTAL</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white font-sans">
-              ติดตามสถานะสิ่งของ
+              ติดตามสถานะพัสดุ & ค่าน้ำหนัก
             </h1>
             <p className="text-red-100 text-xs sm:text-sm mt-1.5 leading-relaxed font-light">
-              ตรวจสอบสถานะพัสดุนำเข้าจากญี่ปุ่น ชั่งน้ำหนักจริง ตรวจสอบยอดค่าใช้จ่าย และติดตามการนำจ่ายพัสดุถึงปลายทาง
+              ตรวจสอบสถานะพัสดุนำเข้าจากญี่ปุ่น ชั่งน้ำหนักจริง คำนวณยอดค่าใช้จ่าย และเช็คเลขพัสดุจัดส่งถึงบ้าน
             </p>
           </div>
         </div>
@@ -194,20 +190,20 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
         <div className="p-6 sm:p-8 bg-gradient-to-b from-red-50/40 to-white">
           <form onSubmit={handleSearchSubmit} className="space-y-4">
             <label className="block text-xs sm:text-sm font-bold text-gray-800">
-              กรอกหมายเลขสิ่งของ / รหัสพัสดุ (Barcode No.) หรือ เบอร์โทรศัพท์ผู้รับ:
+              กรอกรหัสพัสดุ (เช่น KOI-2026-001) หรือ เบอร์โทรศัพท์ที่ใช้สั่งซื้อ:
             </label>
             
             <div className="flex flex-col sm:flex-row gap-2.5">
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                  <Search className="w-5 h-5 text-[#ED1C24]" />
+                  <Search className="w-5 h-5 text-red-600" />
                 </div>
                 <input
                   type="text"
                   value={searchCode}
                   onChange={(e) => setSearchCode(e.target.value)}
                   placeholder="เช่น KOI-2026-001 หรือ 0812345678"
-                  className="w-full pl-11 pr-10 py-3.5 sm:py-4 bg-white border-2 border-gray-300 focus:border-[#ED1C24] rounded-2xl text-sm sm:text-base font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-red-100 transition-all shadow-inner"
+                  className="w-full pl-11 pr-10 py-3.5 sm:py-4 bg-white border-2 border-gray-300 focus:border-red-600 rounded-2xl text-sm sm:text-base font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-red-100 transition-all shadow-inner"
                 />
                 {searchCode && (
                   <button
@@ -216,7 +212,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                       setSearchCode('');
                       setSearched(false);
                     }}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 text-sm font-bold"
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 text-sm font-bold cursor-pointer"
                   >
                     ✕
                   </button>
@@ -225,17 +221,17 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
 
               <button
                 type="submit"
-                className="px-8 py-3.5 sm:py-4 bg-gradient-to-r from-[#ED1C24] to-[#C81018] hover:from-[#D4141E] hover:to-[#A80B13] text-white font-bold rounded-2xl text-sm sm:text-base transition-all shadow-lg shadow-red-600/30 active:scale-[0.98] flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+                className="px-8 py-3.5 sm:py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold rounded-2xl text-sm sm:text-base transition-all shadow-lg shadow-red-600/30 active:scale-[0.98] flex items-center justify-center gap-2 shrink-0 cursor-pointer"
               >
                 <Search className="w-5 h-5" />
-                <span>ค้นหา / ติดตามสิ่งของ</span>
+                <span>ค้นหาพัสดุ</span>
               </button>
             </div>
           </form>
 
           {/* Quick Demo Chips */}
           <div className="mt-4 pt-4 border-t border-gray-200/80 flex flex-wrap items-center gap-2 text-xs text-gray-600">
-            <span className="font-semibold text-gray-500 text-[11px]">💡 ตัวอย่างหมายเลขสิ่งของ:</span>
+            <span className="font-semibold text-gray-500 text-[11px]">💡 ตัวอย่างรหัสพัสดุ:</span>
             {safeOrders.slice(0, 4).map((o) => (
               <button
                 key={o.id}
@@ -246,7 +242,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                   const newUrl = `${window.location.pathname}?mode=customer&track=${encodeURIComponent(o.id)}`;
                   window.history.pushState({ path: newUrl }, '', newUrl);
                 }}
-                className="px-2.5 py-1 bg-white hover:bg-red-50 text-[#ED1C24] hover:text-[#C81018] rounded-lg font-mono text-[11px] font-bold transition-colors border border-red-200 shadow-sm"
+                className="px-2.5 py-1 bg-white hover:bg-red-50 text-red-600 hover:text-red-700 rounded-lg font-mono text-[11px] font-bold transition-colors border border-red-200 shadow-sm cursor-pointer"
               >
                 {o.id}
               </button>
@@ -257,23 +253,23 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
       </div>
 
       {/* =========================================================
-          SECTION 2: TRACKING RESULTS (ไปรษณีย์ไทย TRACK & TRACE VIEW)
+          SECTION 2: TRACKING RESULTS VIEW
           ========================================================= */}
       {searched && (
         <div className="space-y-6 animate-fadeIn">
           {foundOrders.length === 0 ? (
             <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border-2 border-red-100 shadow-md">
-              <div className="w-16 h-16 rounded-full bg-red-50 text-[#ED1C24] flex items-center justify-center mx-auto mb-4 border border-red-200 shadow-inner">
+              <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4 border border-red-200 shadow-inner">
                 <AlertCircle className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">ไม่พบข้อมูลหมายเลขสิ่งของนี้ในระบบ</h3>
+              <h3 className="text-lg font-bold text-gray-900">ไม่พบข้อมูลรหัสพัสดุนี้ในระบบ</h3>
               <p className="text-xs text-gray-500 max-w-md mx-auto mt-1.5 leading-relaxed">
-                กรุณาตรวจสอบหมายเลขพัสดุ (เช่น KOI-2026-001) หรือเบอร์โทรศัพท์ที่ใช้สั่งซื้ออีกครั้ง หรือติดต่อเจ้าหน้าที่ผ่านช่องทาง LINE ได้ตลอดเวลาครับ
+                กรุณาตรวจสอบรหัสพัสดุ (เช่น KOI-2026-001) หรือเบอร์โทรศัพท์ที่ใช้สั่งซื้ออีกครั้ง หรือสอบถามแอดมินทาง LINE ได้เลยครับ
               </p>
               <div className="mt-6 flex justify-center gap-3">
                 <button
                   onClick={() => setSearchCode('')}
-                  className="px-5 py-2.5 text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                  className="px-5 py-2.5 text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer"
                 >
                   ลองค้นหาใหม่
                 </button>
@@ -306,11 +302,11 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                   className="bg-white rounded-3xl border-2 border-gray-200 shadow-lg overflow-hidden"
                 >
                   
-                  {/* 1. Official Postal Barcode Card Header */}
-                  <div className="p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-red-950 text-white border-b-2 border-[#ED1C24] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  {/* 1. Header Card */}
+                  <div className="p-6 bg-gradient-to-r from-slate-900 via-gray-900 to-red-950 text-white border-b-2 border-red-600 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2.5 flex-wrap">
-                        <span className="font-mono text-base sm:text-lg font-black text-white bg-[#ED1C24] px-3.5 py-1 rounded-xl shadow-md tracking-wider">
+                        <span className="font-mono text-base sm:text-lg font-black text-white bg-red-600 px-3.5 py-1 rounded-xl shadow-md tracking-wider">
                           {order.id}
                         </span>
                         <span className="px-2.5 py-1 rounded-lg bg-white/10 text-red-200 text-xs font-semibold border border-white/20">
@@ -318,7 +314,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                         </span>
                         <button
                           onClick={() => handleShareLink(order.id)}
-                          className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors border border-white/20"
+                          className="px-2.5 py-1 bg-white/15 hover:bg-white/25 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors border border-white/20 cursor-pointer"
                           title="คัดลอกลิงก์สำหรับเปิดดูหน้านี้"
                         >
                           {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5 text-gray-300" />}
@@ -335,9 +331,9 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
 
                     {/* Current Status Badge */}
                     <div className="flex flex-col items-start md:items-end gap-1.5 shrink-0">
-                      <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white text-gray-900 font-bold text-xs sm:text-sm shadow-md border-2 border-[#ED1C24]">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#ED1C24] animate-ping"></span>
-                        <span className="text-[#ED1C24]">สถานะ:</span>
+                      <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white text-gray-900 font-bold text-xs sm:text-sm shadow-md border-2 border-red-600">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                        <span className="text-red-600">สถานะ:</span>
                         <span>{currentStatusObj.labelShort}</span>
                       </div>
                       {daysLeft && (
@@ -350,14 +346,14 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                     </div>
                   </div>
 
-                  {/* 2. Thailand Post 5-Step Visual Timeline */}
+                  {/* 2. 5-Step Visual Timeline */}
                   <div className="p-6 sm:p-8 bg-white border-b border-gray-200">
                     <div className="flex items-center justify-between mb-6">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                        <Send className="w-4 h-4 text-[#ED1C24]" />
-                        <span>ขั้นตอนความคืบหน้าสิ่งของ (5 STAGES PROGRESS)</span>
+                        <Package className="w-4 h-4 text-red-600" />
+                        <span>ขั้นตอนความคืบหน้าพัสดุ (5 STAGES PROGRESS)</span>
                       </h4>
-                      <span className="text-xs font-bold text-[#ED1C24] bg-red-50 px-2.5 py-1 rounded-lg border border-red-200">
+                      <span className="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200">
                         ขั้นตอนที่ {currentStep} จาก 5
                       </span>
                     </div>
@@ -366,7 +362,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                     <div className="hidden sm:grid grid-cols-5 gap-2 relative">
                       <div className="absolute top-5 left-8 right-8 h-1.5 bg-gray-200 -z-0 rounded-full">
                         <div 
-                          className="h-full bg-[#ED1C24] transition-all duration-700 rounded-full"
+                          className="h-full bg-red-600 transition-all duration-700 rounded-full"
                           style={{ width: `${((currentStep - 1) / 4) * 100}%` }}
                         ></div>
                       </div>
@@ -379,7 +375,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                           <div key={st.id} className="relative z-10 flex flex-col items-center text-center">
                             <div className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-black transition-all shadow-md ${
                               isCurrent
-                                ? 'bg-[#ED1C24] text-white ring-4 ring-red-200 scale-110'
+                                ? 'bg-red-600 text-white ring-4 ring-red-200 scale-110'
                                 : isDone
                                 ? 'bg-emerald-600 text-white'
                                 : 'bg-white text-gray-400 border-2 border-gray-300'
@@ -387,7 +383,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                               {isDone && !isCurrent ? <Check className="w-6 h-6" /> : st.step}
                             </div>
                             <span className={`mt-3 text-xs font-bold ${
-                              isCurrent ? 'text-[#ED1C24] font-black' : isDone ? 'text-gray-900' : 'text-gray-400'
+                              isCurrent ? 'text-red-600 font-black' : isDone ? 'text-gray-900' : 'text-gray-400'
                             }`}>
                               {st.labelShort}
                             </span>
@@ -409,7 +405,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                           <div key={st.id} className="flex items-start gap-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5 shadow-sm ${
                               isCurrent
-                                ? 'bg-[#ED1C24] text-white ring-2 ring-red-200'
+                                ? 'bg-red-600 text-white ring-2 ring-red-200'
                                 : isDone
                                 ? 'bg-emerald-600 text-white'
                                 : 'bg-gray-100 text-gray-400 border border-gray-300'
@@ -417,7 +413,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                               {isDone && !isCurrent ? <Check className="w-4 h-4" /> : st.step}
                             </div>
                             <div className="flex-1">
-                              <p className={`text-xs font-bold ${isCurrent ? 'text-[#ED1C24] font-black' : isDone ? 'text-gray-900' : 'text-gray-400'}`}>
+                              <p className={`text-xs font-bold ${isCurrent ? 'text-red-600 font-black' : isDone ? 'text-gray-900' : 'text-gray-400'}`}>
                                 {st.label}
                               </p>
                               <p className="text-[11px] text-gray-500 mt-0.5">
@@ -449,7 +445,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleCopyTrackingNo(order.localTrackingNo)}
-                            className="px-3 py-1.5 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors shadow-sm"
+                            className="px-3 py-1.5 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors shadow-sm cursor-pointer"
                           >
                             {copiedTracking === order.localTrackingNo ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                             <span>{copiedTracking === order.localTrackingNo ? 'คัดลอกแล้ว' : 'คัดลอกเลขพัสดุ'}</span>
@@ -460,10 +456,10 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
 
                   </div>
 
-                  {/* 3. Authentic Thailand Post Tracking History Logs Table */}
+                  {/* 3. Detailed Tracking History Logs Table */}
                   <div className="p-6 sm:p-8 bg-gray-50 border-b border-gray-200">
                     <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-[#ED1C24]" />
+                      <FileText className="w-4 h-4 text-red-600" />
                       <span>ประวัติสถานะพัสดุ (TRACKING HISTORY LOGS)</span>
                     </h4>
 
@@ -474,7 +470,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                             <tr className="bg-gray-100 border-b border-gray-200 text-gray-700 font-bold">
                               <th className="py-3 px-4 w-36">วันที่ / เวลา</th>
                               <th className="py-3 px-4 w-44">หน่วยงาน / สถานที่</th>
-                              <th className="py-3 px-4 w-36">สถานะสิ่งของ</th>
+                              <th className="py-3 px-4 w-36">สถานะพัสดุ</th>
                               <th className="py-3 px-4">รายละเอียด</th>
                             </tr>
                           </thead>
@@ -487,13 +483,13 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                                 </td>
                                 <td className="py-3 px-4 text-gray-800">
                                   <div className="flex items-center gap-1.5">
-                                    <MapPin className="w-3.5 h-3.5 text-[#ED1C24] shrink-0" />
+                                    <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
                                     <span>{log.location}</span>
                                   </div>
                                 </td>
                                 <td className="py-3 px-4 whitespace-nowrap">
                                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                                    idx === 0 ? 'bg-[#ED1C24] text-white' : 'bg-gray-100 text-gray-700'
+                                    idx === 0 ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'
                                   }`}>
                                     {log.statusTag}
                                   </span>
@@ -515,8 +511,8 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                     {/* Left: Product Info Card */}
                     <div className="space-y-4">
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <Package className="w-4 h-4 text-[#ED1C24]" />
-                        <span>รายละเอียดสิ่งของในพัสดุ</span>
+                        <Package className="w-4 h-4 text-red-600" />
+                        <span>รายละเอียดสินค้าในพัสดุ</span>
                       </h4>
 
                       <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
@@ -553,13 +549,13 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                     {/* Right: Weight Calculation Breakdown Card */}
                     <div className="space-y-4">
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <Scale className="w-4 h-4 text-[#ED1C24]" />
+                        <Scale className="w-4 h-4 text-red-600" />
                         <span>สรุปการคำนวณค่าน้ำหนัก & ค่าบริการ</span>
                       </h4>
 
                       <div className="p-5 rounded-2xl bg-gradient-to-br from-red-50/60 to-white border-2 border-red-100 space-y-3">
                         <div className="flex justify-between items-center text-xs text-gray-600">
-                          <span>น้ำหนักสิ่งของที่ชั่งจริง:</span>
+                          <span>น้ำหนักสินค้าที่ชั่งจริง:</span>
                           <span className="font-mono text-sm font-bold text-gray-900">{formatWeight(order.weightKg)}</span>
                         </div>
 
@@ -568,7 +564,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                           <span className="font-mono font-bold text-gray-800">{formatCurrency(order.weightRate)} / กก.</span>
                         </div>
 
-                        <div className="flex justify-between items-center text-xs font-bold text-[#ED1C24] pt-2 border-t border-red-100">
+                        <div className="flex justify-between items-center text-xs font-bold text-red-600 pt-2 border-t border-red-100">
                           <span>รวมค่าน้ำหนักญี่ปุ่น-ไทย:</span>
                           <span className="font-mono text-base">{formatCurrency(weightCost)}</span>
                         </div>
@@ -589,7 +585,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
 
                         <div className="pt-3 border-t-2 border-red-200 flex justify-between items-center">
                           <span className="text-xs sm:text-sm font-bold text-gray-900">ยอดคงเหลือสุทธิที่ต้องชำระ:</span>
-                          <span className="font-mono text-lg sm:text-xl font-black text-[#ED1C24]">
+                          <span className="font-mono text-lg sm:text-xl font-black text-red-600">
                             {formatCurrency(totalCalc.remainingBalance)}
                           </span>
                         </div>
@@ -602,7 +598,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
                   {/* 5. Bottom Help Actions */}
                   <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="text-gray-500">
-                      มีข้อสงสัยเกี่ยวกับสถานะพัสดุหรือค่าน้ำหนัก ติดต่อร้านได้ตลอด 24 ชม.
+                      มีข้อสงสัยเกี่ยวกับสถานะพัสดุหรือค่าน้ำหนัก สอบถามทาง LINE ได้ตลอด 24 ชม.
                     </div>
                     <div className="flex items-center gap-2">
                       <a
@@ -625,11 +621,11 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
       )}
 
       {/* =========================================================
-          SECTION 3: INLINE POSTAL RATE CALCULATOR WIDGET
+          SECTION 3: INLINE RATE CALCULATOR WIDGET
           ========================================================= */}
       <div className="bg-white rounded-3xl border-2 border-gray-200 shadow-md p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-red-100 text-[#ED1C24] flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
             <Calculator className="w-5 h-5" />
           </div>
           <div>
@@ -654,7 +650,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
               value={calcWeight}
               onChange={(e) => setCalcWeight(e.target.value)}
               placeholder="เช่น 1.5 หรือ 0.8"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 focus:border-[#ED1C24] rounded-xl text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-red-100"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 focus:border-red-600 rounded-xl text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-red-100"
               required
             />
           </div>
@@ -666,7 +662,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
             <select
               value={calcRate}
               onChange={(e) => setCalcRate(parseFloat(e.target.value))}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 focus:border-[#ED1C24] rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-100"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 focus:border-red-600 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-100"
             >
               <option value={220}>สินค้าทั่วไป (220 ฿/กก.)</option>
               <option value={250}>ขนม / ฟิกเกอร์ / เสื้อผ้า (250 ฿/กก.)</option>
@@ -679,7 +675,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
           <div className="flex items-end">
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-[#ED1C24] to-[#C81018] hover:from-[#D4141E] hover:to-[#A80B13] text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-95"
+              className="w-full py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold rounded-xl text-sm shadow-md transition-all active:scale-95 cursor-pointer"
             >
               คำนวณค่าน้ำหนัก
             </button>
@@ -691,7 +687,7 @@ export default function CustomerTrackingView({ orders = [], trips = [], initialT
             <div className="text-xs text-gray-700">
               น้ำหนัก <strong>{calcResult.weight} กก.</strong> × อัตรา <strong>{calcResult.rate} ฿/กก.</strong>
             </div>
-            <div className="font-mono text-lg font-black text-[#ED1C24]">
+            <div className="font-mono text-lg font-black text-red-600">
               = {formatCurrency(calcResult.total)}
             </div>
           </div>

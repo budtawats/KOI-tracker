@@ -10,8 +10,7 @@ import {
   ShieldCheck,
   Eye,
   LogOut,
-  Settings,
-  Send
+  Settings
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -35,14 +34,14 @@ export default function Navbar({
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white shadow-md border-b-2 border-[#ED1C24] transition-all">
-        {/* Admin Top Postal Banner */}
+      <header className="sticky top-0 z-30 bg-white shadow-md border-b-2 border-red-600 transition-all">
+        {/* Admin Top Banner */}
         <div className="bg-gradient-to-r from-slate-900 via-gray-900 to-red-950 text-white text-[11px] sm:text-xs py-1.5 px-3 sm:px-4 font-medium tracking-wide flex items-center justify-between border-b border-red-900/50">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#ED1C24] text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
               <ShieldCheck className="w-3 h-3" /> ADMIN PORTAL
             </span>
-            <span className="text-gray-300 truncate max-w-[120px] sm:max-w-none">ระบบจัดการหลังบ้าน KOI Japan Post</span>
+            <span className="text-gray-300 truncate max-w-[120px] sm:max-w-none">ระบบจัดการหลังบ้าน KOI Japan Shop</span>
             {lastSavedTime && (
               <span className="hidden md:inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -57,7 +56,7 @@ export default function Navbar({
               onClick={onSwitchToCustomer}
               className="text-red-300 hover:text-white flex items-center gap-1 underline font-semibold cursor-pointer"
             >
-              <span>หน้าลูกค้า (Track & Trace)</span>
+              <span>หน้าลูกค้า (เช็คพัสดุ)</span>
             </button>
           </div>
         </div>
@@ -65,17 +64,17 @@ export default function Navbar({
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-20">
             
-            {/* Postal Logo */}
+            {/* Logo */}
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#ED1C24] to-[#C81018] flex items-center justify-center text-white shadow-md shadow-red-500/30 ring-2 ring-red-100 shrink-0">
-                <Send className="w-4 h-4 sm:w-6 sm:h-6 -rotate-12 translate-x-0.5" />
+              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/20 ring-2 ring-red-100 shrink-0">
+                <span className="text-lg sm:text-2xl font-black tracking-tight">KOI</span>
               </div>
               <div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <span className="text-base sm:text-xl font-bold text-gray-900 tracking-tight">
-                    KOI JAPAN POST
+                    KOI Japan Shop
                   </span>
-                  <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold bg-[#ED1C24] text-white rounded-md shadow-sm">
+                  <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold bg-gray-900 text-white rounded-md shadow-sm">
                     หลังบ้าน
                   </span>
                 </div>
@@ -105,7 +104,7 @@ export default function Navbar({
                 title="เครื่องคิดเลขค่าน้ำหนัก"
                 className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 rounded-xl border border-gray-200 transition-colors shadow-sm cursor-pointer"
               >
-                <Calculator className="w-3.5 h-3.5 text-[#ED1C24]" />
+                <Calculator className="w-3.5 h-3.5 text-red-600" />
                 <span>คำนวณค่าน้ำหนัก</span>
               </button>
 
@@ -132,7 +131,7 @@ export default function Navbar({
               <button
                 onClick={onOpenSettings}
                 title="ตั้งค่าร้านค้า, ช่องทางติดต่อ, บัญชีธนาคาร และรหัสผ่าน"
-                className="p-2 text-gray-700 hover:text-[#ED1C24] bg-white hover:bg-red-50 rounded-xl border border-gray-200 hover:border-red-200 transition-colors shadow-sm cursor-pointer"
+                className="p-2 text-gray-700 hover:text-red-600 bg-white hover:bg-red-50 rounded-xl border border-gray-200 hover:border-red-200 transition-colors shadow-sm cursor-pointer"
               >
                 <Settings className="w-4 h-4" />
               </button>
@@ -140,7 +139,7 @@ export default function Navbar({
               {/* Add New Order Button */}
               <button
                 onClick={onOpenNewOrder}
-                className="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#ED1C24] to-[#C81018] hover:from-[#D4141E] hover:to-[#A80B13] rounded-xl shadow-md shadow-red-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl shadow-md shadow-red-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>เพิ่มสินค้า</span>
@@ -150,7 +149,7 @@ export default function Navbar({
               <button
                 onClick={onSwitchToCustomer}
                 title="ออกจากหน้าหลังบ้านไปหน้าลูกค้า"
-                className="p-2 text-gray-400 hover:text-[#ED1C24] bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors shrink-0 cursor-pointer"
+                className="p-2 text-gray-400 hover:text-red-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors shrink-0 cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -162,12 +161,12 @@ export default function Navbar({
       </header>
 
       {/* MOBILE BOTTOM FLOATING ACTION BAR */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t-2 border-[#ED1C24] shadow-2xl py-2 px-3 flex items-center justify-around text-[10px] text-gray-600 font-bold no-print">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t-2 border-red-600 shadow-2xl py-2 px-3 flex items-center justify-around text-[10px] text-gray-600 font-bold no-print">
         <button
           onClick={onOpenNewOrder}
-          className="flex flex-col items-center gap-0.5 text-[#ED1C24] active:scale-95 cursor-pointer"
+          className="flex flex-col items-center gap-0.5 text-red-600 active:scale-95 cursor-pointer"
         >
-          <div className="w-8 h-8 rounded-full bg-[#ED1C24] text-white flex items-center justify-center shadow-md shadow-red-500/30">
+          <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md shadow-red-500/30">
             <PlusCircle className="w-4 h-4" />
           </div>
           <span>เพิ่มพัสดุ</span>
@@ -175,9 +174,9 @@ export default function Navbar({
 
         <button
           onClick={onOpenCalculator}
-          className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-[#ED1C24] active:scale-95 cursor-pointer"
+          className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-red-600 active:scale-95 cursor-pointer"
         >
-          <div className="w-8 h-8 rounded-xl bg-red-50 text-[#ED1C24] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
             <Calculator className="w-4 h-4" />
           </div>
           <span>คิดค่าน้ำหนัก</span>
